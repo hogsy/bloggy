@@ -337,6 +337,13 @@ static bool load_config( void )
 		}
 		else if ( strcmp( token, "social" ) == 0 )
 		{
+			if ( config.numSocials >= MAX_SOCIALS )
+			{
+				printf( "Hit maximum socials limit (%u >= %u)!", config.numSocials, MAX_SOCIALS );
+				PlSkipLine( &p );
+				continue;
+			}
+
 			Social *social = &config.socials[ config.numSocials ];
 			PlParseEnclosedString( &p, social->name, sizeof( social->name ) );
 			PlParseEnclosedString( &p, social->url, sizeof( social->url ) );
