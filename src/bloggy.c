@@ -172,8 +172,8 @@ static void print_html_header( FILE *file )
 	fprintf( file,
 	         "<head>"
 	         "<meta charset=\"UTF-8\">"
-	         "<link rel=\"icon\" type=\"image/png\" href=\"web/favicon-32x32.png\" sizes=\"32x32\">"
-	         "<link rel=\"icon\" type=\"image/png\" href=\"web/favicon-16x16.png\" sizes=\"16x16\">"
+	         "<link rel=\"icon\" type=\"image/png\" href=\"favicon-32x32.png\" sizes=\"32x32\">"
+	         "<link rel=\"icon\" type=\"image/png\" href=\"favicon-16x16.png\" sizes=\"16x16\">"
 	         "<link rel=\"stylesheet\" href=\"style.css?ver=%lu\">"
 	         "<title>%s</title>"
 	         "</head>",
