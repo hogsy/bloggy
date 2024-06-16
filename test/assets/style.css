@@ -1,0 +1,289 @@
+/****************************************************************
+           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                   Version 2, December 2004
+
+Copyright (C) 2021-2024 Mark E. Sowden <hogsy@oldtimes-software.com>
+
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
+
+           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+ 0. You just DO WHAT THE FUCK YOU WANT TO.
+****************************************************************/
+
+@font-face {
+    font-family: 'unifont';
+    src: url('fonts/unifont-15.1.05.otf') format('opentype')
+}
+
+:root {
+    --heading-font: "Tahoma", sans-serif;
+    --heading-color: rgb(33, 255, 129);
+    --body-font: "Tahoma", sans-serif;
+
+    --base-font-size: 16px;
+
+    --link-color: rgb(255, 197, 33);
+    --link-hover-color: rgb(255, 250, 150);
+    --link-visited-color: rgb(255, 150, 10);
+
+    --background-color: rgb(19, 19, 19);
+    --base-color: rgb(255, 255, 255);
+    --inside-color: rgb(255, 197, 33);
+    --deep-color: rgb(255, 71, 71);
+
+    --base-darker: rgb(19, 154, 81);
+    --inside-darker: rgb(127, 96, 16);
+    --deep-darker: rgb(127, 35, 35);
+
+    --colour-x: #215BFF;
+
+    --base-radius: 0.35em;
+}
+
+table {
+    table-layout: fixed;
+    width: 100%;
+    font-size: 14px;
+}
+
+tbody tr, td {
+    /*! border: 1px dotted var(--base-darker); */
+    /*! border-radius: var(--base-radius); */
+    text-align: left;
+    padding: 2px;
+    border-bottom: 1px dotted var(--base-darker);
+}
+
+td:nth-of-type(1), th:nth-of-type(1) {
+    word-break: break-all;
+}
+
+td:nth-of-type(3), th:nth-of-type(3),
+td:nth-of-type(4), th:nth-of-type(4) {
+    white-space: nowrap;
+}
+
+/* Root page: "Year" column */
+table.root td:nth-of-type(3), table.root th:nth-of-type(3) {
+    width: 5rem;
+}
+
+/* Directory page: "Path" column */
+table.directory td:nth-of-type(2), table.directory th:nth-of-type(2) {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Directory page: "Type" and "Size" columns */
+table.directory td:nth-of-type(3), table.directory th:nth-of-type(3),
+table.directory td:nth-of-type(4), table.directory th:nth-of-type(4) {
+    width: 5rem;
+}
+
+th {
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: var(--base-radius);
+    padding: 5px;
+    background: var(--base-color);
+    color: black;
+}
+
+h1 {
+    font-size: 48px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    font-family: var(--heading-font);
+    color: var(--heading-color);
+}
+
+h2 {
+    font-size: 1.5em;
+    border-bottom: 1px solid var(--base-color);
+    font-family: var(--heading-font);
+    color: var(--heading-color);
+}
+
+body {
+    max-width: 640px;
+
+    background: var(--background-color);
+    color: var(--base-color);
+
+    font-family: var(--body-font);
+    font-size: var(--base-font-size);
+
+    padding-left: 15px;
+    padding-right: 15px;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.title {
+    margin: 0;
+    font-size: 32px;
+}
+
+.subtitle {
+    margin-top: 0;
+    font-size: var(--base-font-size);
+}
+
+.post-title {
+    margin: 0;
+    font-size: 24px;
+}
+
+.post-subtitle {
+    margin-top: 0;
+    font-size: var(--base-font-size);
+}
+
+code {
+    padding: 2px;
+    background: black;
+    border: 4px solid black;
+    border-radius: var(--base-radius);
+    font-size: 13px;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: dotted underline;
+}
+
+a:hover {
+    color: var(--link-hover-color);
+    text-decoration: underline;
+}
+
+/*
+a:visited {
+    color: var(--link-visited-color);
+}
+ */
+
+.subtitle {
+    margin: 0 0 16px;
+    font-size: 22px;
+}
+
+.post-body {
+    /*! width: 1024px; */
+    text-align: left;
+    /*align-content: left;*/
+
+    margin-left: auto;
+    margin-right: auto;
+
+    min-height: 315px;
+}
+
+.center {
+    width: 100%;
+    align-content: center;
+    text-align: center;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.footer {
+    margin-top: auto;
+    bottom: 5%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 14px;
+}
+
+.footer p {
+}
+
+.gallery-collapsed > a, .gallery-expanded > a {
+    vertical-align: middle;
+}
+
+.gallery-collapsed > .bubble-block, .gallery-expanded > .bubble-block {
+    vertical-align: middle;
+    color: var(--colour-x);
+}
+
+.gallery-collapsed > .bubble-block:hover, .gallery-expanded > .bubble-block:hover {
+    vertical-align: middle;
+    color: var(--deep-color);
+}
+
+.bubble-block {
+    background: var(--inside-color);
+    color: black;
+    border-radius: var(--base-radius);
+    padding: 0.75em;
+    margin: 0.2em;
+    display: inline-block;
+}
+
+.bubble-block img {
+    vertical-align: middle;
+}
+
+.bubble-block a {
+    color: var(--colour-x);
+}
+
+.bubble-block a:hover {
+    color: var(--deep-color);
+}
+
+.bubble-image {
+    display: inline-block;
+}
+
+.bubble-image > img {
+    border: 2px solid;
+    border-radius: var(--base-radius);
+    margin: 0.2em;
+}
+
+hr {
+    color: var(--base-color);
+    overflow: visible;
+    text-align: center;
+    background: none;
+    border: 1px solid;
+}
+
+.sidebar {
+    position: fixed;
+    overflow-x: hidden;
+    padding-top: 20px;
+    width: 200px;
+    height: 100%;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: black;
+}
+
+/*****************************************************/
+/* Animations */
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.show {
+    display: block;
+    animation-duration: 2s;
+    animation-name: fadein;
+}
