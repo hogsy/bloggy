@@ -50,10 +50,10 @@ static time_t str_to_timestamp( const char *string )
 static char *load_to_buf( const char *path )
 {
 	PLFile *file = PlOpenFile( path, true );
-	if ( file == nullptr )
+	if ( file == NULL )
 	{
 		printf( "Failed to open file: %s\n", PlGetError() );
-		return nullptr;
+		return NULL;
 	}
 
 	size_t fileSize = PlGetFileSize( file );
@@ -123,7 +123,7 @@ static void index_post( const char *path, void * )
 
 	// now parse the file itself
 	char *buf = load_to_buf( path );
-	if ( buf == nullptr )
+	if ( buf == NULL )
 	{
 		return;
 	}
@@ -131,7 +131,7 @@ static void index_post( const char *path, void * )
 	parse_post_buf( buf );
 
 	Post *in = parse_post_buf( buf );
-	if ( in != nullptr )
+	if ( in != NULL )
 	{
 		strncpy( in->id, filename, 10 );
 		in->timestamp = timestamp;
@@ -177,7 +177,7 @@ static void print_html_header( FILE *file )
 	         "<link rel=\"stylesheet\" href=\"style.css?ver=%lu\">"
 	         "<title>%s</title>"
 	         "</head>",
-	         time( nullptr ), config.title );
+	         time( NULL ), config.title );
 }
 
 static void print_html_footer( FILE *file )
@@ -189,7 +189,7 @@ static void print_html_footer( FILE *file )
 		char copyPeriod[ 16 ] = {};
 		Post *firstPost = PlGetVectorArrayBack( blogPosts );
 		Post *lastPost = PlGetVectorArrayFront( blogPosts );
-		assert( firstPost != nullptr && lastPost != nullptr );
+		assert( firstPost != NULL && lastPost != NULL );
 		if ( firstPost == lastPost )
 		{
 			strncpy( copyPeriod, firstPost->id, 4 );
@@ -267,7 +267,7 @@ static void write_html_pages( void )
 		PlSetupPath( path, true, "web/%s.htm", posts[ i ]->id );
 
 		FILE *file = fopen( path, "w" );
-		if ( file == nullptr )
+		if ( file == NULL )
 		{
 			printf( "Failed to write post (%s)!\n", path );
 			continue;
@@ -286,7 +286,7 @@ static void write_html_pages( void )
 		fprintf( file, "<hr></div>" );
 
 		fprintf( file, "<div class=\"post-body\">" );
-		if ( posts[ i ]->body != nullptr )
+		if ( posts[ i ]->body != NULL )
 		{
 			fprintf( file, "%s", posts[ i ]->body );
 			PL_DELETEN( posts[ i ]->body );
@@ -302,7 +302,7 @@ static void write_html_pages( void )
 static bool load_config( void )
 {
 	char *buf = load_to_buf( "bloggy.conf" );
-	if ( buf == nullptr )
+	if ( buf == NULL )
 	{
 		return false;
 	}
@@ -406,7 +406,7 @@ int main( int argc, char **argv )
 
 	blogPosts = PlCreateVectorArray( 32 );
 
-	PlScanDirectory( "assets/", nullptr, copy_asset, true, "assets/" );
+	PlScanDirectory( "assets/", NULL, copy_asset, true, "assets/" );
 	PlScanDirectory( "posts/", "post", index_post, false, blogPosts );
 
 	// now qsort all the blog posts based on their timestamp

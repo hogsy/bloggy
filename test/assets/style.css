@@ -14,11 +14,6 @@ as the name is changed.
  0. You just DO WHAT THE FUCK YOU WANT TO.
 ****************************************************************/
 
-@font-face {
-    font-family: 'unifont';
-    src: url('fonts/unifont-15.1.05.otf') format('opentype')
-}
-
 :root {
     --heading-font: "Tahoma", sans-serif;
     --heading-color: rgb(33, 255, 129);
@@ -202,88 +197,10 @@ a:visited {
     font-size: 14px;
 }
 
-.footer p {
-}
-
-.gallery-collapsed > a, .gallery-expanded > a {
-    vertical-align: middle;
-}
-
-.gallery-collapsed > .bubble-block, .gallery-expanded > .bubble-block {
-    vertical-align: middle;
-    color: var(--colour-x);
-}
-
-.gallery-collapsed > .bubble-block:hover, .gallery-expanded > .bubble-block:hover {
-    vertical-align: middle;
-    color: var(--deep-color);
-}
-
-.bubble-block {
-    background: var(--inside-color);
-    color: black;
-    border-radius: var(--base-radius);
-    padding: 0.75em;
-    margin: 0.2em;
-    display: inline-block;
-}
-
-.bubble-block img {
-    vertical-align: middle;
-}
-
-.bubble-block a {
-    color: var(--colour-x);
-}
-
-.bubble-block a:hover {
-    color: var(--deep-color);
-}
-
-.bubble-image {
-    display: inline-block;
-}
-
-.bubble-image > img {
-    border: 2px solid;
-    border-radius: var(--base-radius);
-    margin: 0.2em;
-}
-
 hr {
     color: var(--base-color);
     overflow: visible;
     text-align: center;
     background: none;
     border: 1px solid;
-}
-
-.sidebar {
-    position: fixed;
-    overflow-x: hidden;
-    padding-top: 20px;
-    width: 200px;
-    height: 100%;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: black;
-}
-
-/*****************************************************/
-/* Animations */
-
-@keyframes fadein {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.show {
-    display: block;
-    animation-duration: 2s;
-    animation-name: fadein;
 }
