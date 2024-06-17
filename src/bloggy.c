@@ -128,8 +128,6 @@ static void index_post( const char *path, void * )
 		return;
 	}
 
-	parse_post_buf( buf );
-
 	Post *in = parse_post_buf( buf );
 	if ( in != NULL )
 	{
