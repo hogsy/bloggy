@@ -233,6 +233,15 @@ static void print_html_footer( FILE *file )
 	fprintf( file, "</div>" );
 }
 
+static void print_html_post_selector( FILE *file, const Post *next, const Post *prev )
+{
+	fprintf( file, "<div class=\"post-selector\">" );
+	if ( prev != NULL ) { fprintf( file, "<a href=\"%s.htm\">&larr; %s</a>", prev->id, prev->id ); }
+	if ( next != NULL ) { fprintf( file, "<a style=\"float:right\" href=\"%s.htm\">%s &rarr;</a>", next->id, next->id ); }
+	fprintf( file, "</div>" );
+	fprintf( file, "<div style=\"clear: both;\"></div>" );
+}
+
 static void write_html_homepage( void )
 {
 	FILE *file = fopen( "web/index.htm", "w" );
@@ -303,7 +312,7 @@ static void write_html_pages( void )
 
 		print_html_header( file, title, url );
 
-		fprintf( file, "<a href=\"index.htm\">&larr; Back</a>" );
+		fprintf( file, "<a class=\"home-icon\" href=\"index.htm\">&#127968;</a>" );
 
 		fprintf( file, "<div class=\"post-header\">" );
 		if ( *posts[ i ]->title != '\0' )
@@ -313,7 +322,11 @@ static void write_html_pages( void )
 		fprintf( file, "<h1 class=\"post-subtitle\">%s / %s</h2>", posts[ i ]->id, config.author );
 		fprintf( file, "<hr></div>" );
 
+		print_html_post_selector( file, ( i > 0 ) ? posts[ i - 1 ] : NULL, i < ( numPosts - 1 ) ? posts[ i + 1 ] : NULL );
+
 		fprintf( file, "<div class=\"post-body\">%s</div>", posts[ i ]->body );
+
+		print_html_post_selector( file, ( i > 0 ) ? posts[ i - 1 ] : NULL, i < ( numPosts - 1 ) ? posts[ i + 1 ] : NULL );
 
 		print_html_footer( file );
 
