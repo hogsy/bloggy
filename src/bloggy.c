@@ -236,10 +236,9 @@ static void print_html_footer( FILE *file )
 static void print_html_post_selector( FILE *file, const Post *next, const Post *prev )
 {
 	fprintf( file, "<div class=\"post-selector\">" );
-	if ( prev != NULL ) { fprintf( file, "<a href=\"%s.htm\">&larr; %s</a>", prev->id, prev->id ); }
-	if ( next != NULL ) { fprintf( file, "<a style=\"float:right\" href=\"%s.htm\">%s &rarr;</a>", next->id, next->id ); }
+	if ( prev != NULL ) { fprintf( file, "<a class=\"left-item\" href=\"%s.htm\">&larr; %s</a>", prev->id, prev->id ); }
+	if ( next != NULL ) { fprintf( file, "<a class=\"right-item\" href=\"%s.htm\">%s &rarr;</a>", next->id, next->id ); }
 	fprintf( file, "</div>" );
-	fprintf( file, "<div style=\"clear: both;\"></div>" );
 }
 
 static void write_html_homepage( void )
