@@ -182,7 +182,10 @@ static void print_html_header( FILE *file, const char *title, const char *url )
 	// head section
 
 	fprintf( file, "<head>"
-	               "<meta charset=\"UTF-8\"><link rel=\"stylesheet\" href=\"style.css?ver=%lu\">",
+	               "<meta charset=\"UTF-8\">"
+	               "<link rel=\"stylesheet\" href=\"style.css?ver=%lu\">"
+	               "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css\">"
+	               "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js\"></script>",
 	         time( NULL ) );
 	fprintf( file, "<meta property=\"og:site_name\" content=\"%s\"/>", config.title );
 	fprintf( file, "<meta property=\"og:type\" content=\"website\"/>" );
@@ -193,7 +196,10 @@ static void print_html_header( FILE *file, const char *title, const char *url )
 	         "<link rel=\"icon\" type=\"image/png\" href=\"favicon-32x32.png\" sizes=\"32x32\">"
 	         "<link rel=\"icon\" type=\"image/png\" href=\"favicon-16x16.png\" sizes=\"16x16\">"
 	         "<title>%s</title>"
-	         "</head>",
+	         "</head>"
+	         "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js\"></script>"
+	         "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js\"></script>"
+	         "<script>hljs.highlightAll();</script>",
 	         title );
 }
 
