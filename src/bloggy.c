@@ -22,6 +22,11 @@ struct Config
 	char author[ 64 ];  // author of the blog
 	char url[ 128 ];    // base url of the blog
 
+	struct
+	{
+		char creator[ 128 ];// https://github.com/mastodon/mastodon/pull/30398
+	} fediverse;
+
 	Social socials[ MAX_SOCIALS ];
 	unsigned int numSocials;
 } config = {};
@@ -191,6 +196,10 @@ static void print_html_header( FILE *file, const char *title, const char *url )
 	fprintf( file, "<meta property=\"og:type\" content=\"website\"/>" );
 	fprintf( file, "<meta property=\"og:title\" content=\"%s\"/>", title );
 	fprintf( file, "<meta property=\"og:url\" content=\"%s\"/>", url );
+	if ( *config.fediverse.creator != '\0' )
+	{
+		fprintf( file, "<meta property=\"fediverse:creator\" content=\"%s\"/>", config.fediverse.creator );
+	}
 
 	fprintf( file,
 	         "<link rel=\"icon\" type=\"image/png\" href=\"favicon-32x32.png\" sizes=\"32x32\">"
@@ -352,7 +361,7 @@ static bool load_config( void )
 	{
 		char token[ 64 ];
 		PlParseToken( &p, token, sizeof( token ) );
-		if ( *token == '\0' )
+		if ( *token == '\0' || *token == ';' )
 		{
 			PlSkipLine( &p );
 			continue;
@@ -360,26 +369,18 @@ static bool load_config( void )
 		else if ( strcmp( token, "title" ) == 0 )
 		{
 			PlParseEnclosedString( &p, config.title, sizeof( config.title ) );
-			PlSkipLine( &p );
-			continue;
 		}
 		else if ( strcmp( token, "subtitle" ) == 0 )
 		{
 			PlParseEnclosedString( &p, config.subtitle, sizeof( config.subtitle ) );
-			PlSkipLine( &p );
-			continue;
 		}
 		else if ( strcmp( token, "author" ) == 0 )
 		{
 			PlParseEnclosedString( &p, config.author, sizeof( config.author ) );
-			PlSkipLine( &p );
-			continue;
 		}
 		else if ( strcmp( token, "url" ) == 0 )
 		{
 			PlParseEnclosedString( &p, config.url, sizeof( config.url ) );
-			PlSkipLine( &p );
-			continue;
 		}
 		else if ( strcmp( token, "social" ) == 0 )
 		{
@@ -394,10 +395,15 @@ static bool load_config( void )
 			PlParseEnclosedString( &p, social->name, sizeof( social->name ) );
 			PlParseEnclosedString( &p, social->url, sizeof( social->url ) );
 			config.numSocials++;
-			PlSkipLine( &p );
-			continue;
 		}
-		printf( "Unknown token (%s), skipping!\n", token );
+		else if ( strcmp( token, "fediverse:creator" ) == 0 )
+		{
+			PlParseEnclosedString( &p, config.fediverse.creator, sizeof( config.fediverse.creator ) );
+		}
+		else
+		{
+			printf( "Unknown token (%s), skipping!\n", token );
+		}
 		PlSkipLine( &p );
 	}
 
