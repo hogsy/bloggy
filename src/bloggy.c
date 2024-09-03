@@ -27,11 +27,12 @@ struct Config
 		char creator[ 128 ];// https://github.com/mastodon/mastodon/pull/30398
 	} fediverse;
 
-	Social socials[ MAX_SOCIALS ];
+	Social       socials[ MAX_SOCIALS ];
 	unsigned int numSocials;
 } config = {};
 
 static PLVectorArray *blogPosts;
+static PLVectorArray *blogPages;
 
 static time_t str_to_timestamp( const char *string )
 {
@@ -62,8 +63,8 @@ static char *load_to_buf( const char *path )
 		return NULL;
 	}
 
-	size_t fileSize = PlGetFileSize( file );
-	char *buf = PL_NEW_( char, fileSize + 1 );
+	size_t fileSize  = PlGetFileSize( file );
+	char  *buf       = PL_NEW_( char, fileSize + 1 );
 	size_t bytesRead = PlReadFile( file, buf, sizeof( char ), fileSize );
 	if ( bytesRead != fileSize )
 	{
@@ -107,7 +108,7 @@ static Post *parse_post_buf( const char *buf )
 
 			// this is where the main body of the post begins - let's determine how big it is first
 			size_t length = strlen( p );
-			post->body = PL_NEW_( char, length + 1 );
+			post->body    = PL_NEW_( char, length + 1 );
 			for ( unsigned int i = 0; i < length; ++i )
 			{
 				post->body[ i ] = *( p++ );
@@ -129,11 +130,11 @@ static Post *parse_post_buf( const char *buf )
 	return post;
 }
 
-static void index_post( const char *path, void * )
+static void index_post( const char *path, void *user )
 {
 	// convert the filename into a timestamp for sorting later
-	const char *filename = PlGetFileName( path );
-	time_t timestamp = str_to_timestamp( filename );
+	const char *filename  = PlGetFileName( path );
+	time_t      timestamp = str_to_timestamp( filename );
 	if ( timestamp == 0 )
 	{
 		return;
@@ -152,9 +153,36 @@ static void index_post( const char *path, void * )
 		strncpy( in->id, filename, 10 );
 		in->timestamp = timestamp;
 
-		PlPushBackVectorArrayElement( blogPosts, in );
+		PlPushBackVectorArrayElement( ( PLVectorArray * ) user, in );
 
 		printf( "Indexed post, %s (%s)\n", in->id, *in->title != '\0' ? in->title : "n/a" );
+	}
+
+	PL_DELETE( buf );
+}
+
+static void index_page( const char *path, void *user )
+{
+	char *buf = load_to_buf( path );
+	if ( buf == NULL )
+	{
+		return;
+	}
+
+	Post *in = parse_post_buf( buf );
+	if ( in != NULL )
+	{
+		const char *filename = PlGetFileName( path );
+		strncpy( in->id, filename, strlen( filename ) - 5 );
+		if ( *in->title == '\0' )
+		{
+			strncpy( in->title, in->id, sizeof( in->title ) - 1 );
+			printf( "No title specified for page (%s)!\n", filename );
+		}
+
+		PlPushBackVectorArrayElement( ( PLVectorArray * ) user, in );
+
+		printf( "Indexed page, %s (%s)\n", in->id, *in->title != '\0' ? in->title : "n/a" );
 	}
 
 	PL_DELETE( buf );
@@ -218,9 +246,9 @@ static void print_html_footer( FILE *file )
 	{
 		// going to do something cheeky here and determine the start and end for copyright range based on the posts
 
-		char copyPeriod[ 16 ] = {};
-		Post *firstPost = PlGetVectorArrayBack( blogPosts );
-		Post *lastPost = PlGetVectorArrayFront( blogPosts );
+		char  copyPeriod[ 16 ] = {};
+		Post *firstPost        = PlGetVectorArrayBack( blogPosts );
+		Post *lastPost         = PlGetVectorArrayFront( blogPosts );
 		assert( firstPost != NULL && lastPost != NULL );
 		if ( firstPost == lastPost )
 		{
@@ -273,10 +301,21 @@ static void write_html_homepage( void )
 	{
 		fprintf( file, "<h1 class=\"subtitle\">%s</h1>", config.subtitle );
 	}
-	fprintf( file, "<hr></div>" );
+
+	fprintf( file, "<div class=\"menu\">" );
+	unsigned int numPages;
+	Post       **pages = ( Post       **) PlGetVectorArrayDataEx( blogPages, &numPages );
+	for ( unsigned int i = 0; i < numPages; ++i )
+	{
+		fprintf( file, "<a href=\"%s.htm\">%s</a>", pages[ i ]->id, pages[ i ]->title );
+		fprintf( file, i < ( numPages - 1 ) ? " &#8285; " : "<br>" );
+	}
+	fprintf( file, "</div>" );//menu
+
+	fprintf( file, "</div>" );//header
 
 	unsigned int numPosts;
-	Post **posts = ( Post ** ) PlGetVectorArrayDataEx( blogPosts, &numPosts );
+	Post       **posts = ( Post       **) PlGetVectorArrayDataEx( blogPosts, &numPosts );
 	for ( unsigned int i = 0; i < numPosts; ++i )
 	{
 		fprintf( file, "<div class=\"blog-item\"><a href=\"%s.htm\">%s", posts[ i ]->id, posts[ i ]->id );
@@ -304,8 +343,46 @@ static void write_html_pages( void )
 
 	write_html_homepage();
 
+	unsigned int numPages;
+	Post       **pages = ( Post       **) PlGetVectorArrayDataEx( blogPages, &numPages );
+	for ( unsigned int i = 0; i < numPages; ++i )
+	{
+		PLPath path;
+		PlSetupPath( path, true, "web/%s.htm", pages[ i ]->id );
+
+		FILE *file = fopen( path, "w" );
+		if ( file == NULL )
+		{
+			printf( "Failed to write post (%s)!\n", path );
+			continue;
+		}
+
+		char title[ sizeof( config.title ) * 2 ];
+		snprintf( title, sizeof( title ), "%s | %s", config.title, ( *pages[ i ]->title != '\0' ) ? pages[ i ]->title : pages[ i ]->id );
+
+		char url[ sizeof( config.url ) * 2 ];
+		snprintf( url, sizeof( url ), "%s/%s.htm", config.url, pages[ i ]->id );
+
+		print_html_header( file, title, url );
+
+		fprintf( file, "<a class=\"home-icon\" href=\"index.htm\">&#127968;</a>" );
+
+		fprintf( file, "<div class=\"post-header\">" );
+		if ( *pages[ i ]->title != '\0' )
+		{
+			fprintf( file, "<h1 class=\"post-title\">%s</h1>", pages[ i ]->title );
+		}
+		fprintf( file, "<hr></div>" );
+
+		fprintf( file, "<div class=\"post-body\">%s</div>", pages[ i ]->body );
+
+		print_html_footer( file );
+
+		fclose( file );
+	}
+
 	unsigned int numPosts;
-	Post **posts = ( Post ** ) PlGetVectorArrayDataEx( blogPosts, &numPosts );
+	Post       **posts = ( Post       **) PlGetVectorArrayDataEx( blogPosts, &numPosts );
 	for ( unsigned int i = 0; i < numPosts; ++i )
 	{
 		PLPath path;
@@ -400,6 +477,12 @@ static bool load_config( void )
 		{
 			PlParseEnclosedString( &p, config.fediverse.creator, sizeof( config.fediverse.creator ) );
 		}
+		else if ( strcmp( token, "page" ) == 0 )
+		{
+			PLPath path;
+			PlParseEnclosedString( &p, path, sizeof( path ) );
+			index_page( path, blogPages );
+		}
 		else
 		{
 			printf( "Unknown token (%s), skipping!\n", token );
@@ -421,7 +504,7 @@ static void copy_asset( const char *path, void *user )
 	PLPath temp;
 	strcpy( temp, dest );
 	char *c = strrchr( temp, '/' );
-	*c = '\0';
+	*c      = '\0';
 	if ( !PlCreatePath( temp ) )
 	{
 		printf( "Failed to create path (%s): %s\n", temp, PlGetError() );
@@ -435,6 +518,14 @@ static void copy_asset( const char *path, void *user )
 	}
 
 	printf( "Failed to copy asset (%s) to destination (%s): %s\n", path, dest, PlGetError() );
+}
+
+static void cleanup( void )
+{
+	PlDestroyVectorArrayEx( blogPosts, PlFree );
+	PlDestroyVectorArrayEx( blogPages, PlFree );
+
+	PlShutdown();
 }
 
 int main( int argc, char **argv )
@@ -451,39 +542,43 @@ int main( int argc, char **argv )
 
 	double startTime = PlGetCurrentSeconds();
 
+	blogPosts = PlCreateVectorArray( 32 );
+	blogPages = PlCreateVectorArray( 32 );
+
 	if ( !load_config() )
 	{
+		cleanup();
 		return EXIT_FAILURE;
 	}
 
 	if ( *config.url == '\0' )
 	{
+		cleanup();
 		fprintf( stderr, "No URL specified in config!\n" );
 		return EXIT_FAILURE;
 	}
 	if ( *config.author == '\0' )
 	{
+		cleanup();
 		fprintf( stderr, "No author specified in config!\n" );
 		return EXIT_FAILURE;
 	}
-
-	blogPosts = PlCreateVectorArray( 32 );
 
 	PlScanDirectory( "assets/", NULL, copy_asset, true, "assets/" );
 	PlScanDirectory( "posts/", "post", index_post, false, blogPosts );
 
 	// now qsort all the blog posts based on their timestamp
 	unsigned int numPosts;
-	void **array = PlGetVectorArrayDataEx( blogPosts, &numPosts );
+	void       **array = PlGetVectorArrayDataEx( blogPosts, &numPosts );
 	qsort( array, numPosts, sizeof( Post * ), compare_timestamps );
 
 	write_html_pages();
 
-	PlShutdown();
-
 	double endTime = PlGetCurrentSeconds();
 
 	printf( "Site generated in %f seconds.\n", endTime - startTime );
+
+	cleanup();
 
 	return EXIT_SUCCESS;
 }

@@ -20,6 +20,7 @@ as the name is changed.
     --body-font: "Tahoma", sans-serif;
 
     --base-font-size: 16px;
+    --subtitle-font-size: 12px;
 
     --link-color: rgb(255, 197, 33);
     --link-hover-color: rgb(255, 250, 150);
@@ -99,7 +100,7 @@ h1 {
 
 h2 {
     font-size: 1.5em;
-    border-bottom: 1px solid var(--base-color);
+    border-bottom: 1px solid var(--heading-color);
     font-family: var(--heading-font);
     color: var(--heading-color);
 }
@@ -118,6 +119,14 @@ body {
 
     margin-left: auto;
     margin-right: auto;
+
+    text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+
+    border: 2px solid var(--heading-color);
+    border-radius: var(--base-radius);
 }
 
 .title {
@@ -140,12 +149,31 @@ body {
     font-size: var(--base-font-size);
 }
 
-code {
-    padding: 2px;
+.post-selector {
+    display: flex;
+    justify-content: space-between;
+}
+
+.left-item {
+    display: inline-block;
+
+}
+
+.right-item {
+    display: inline-block;
+}
+
+pre {
     background: black;
-    border: 4px solid black;
+    border: 2px solid black;
+    padding: 2px;
     border-radius: var(--base-radius);
     font-size: 13px;
+    overflow:scroll;
+}
+
+code {
+    border-radius: var(--base-radius);
 }
 
 a {
@@ -164,9 +192,33 @@ a:visited {
 }
  */
 
+.menu {
+    color: var(--heading-color);
+    border: 2px solid var(--heading-color);
+    border-radius: var(--base-radius);
+    padding: 5px;
+    margin-bottom: 8px;
+}
+
 .subtitle {
     margin: 0 0 16px;
     font-size: 22px;
+}
+
+.img-subtitle {
+    padding:0;
+    margin:0;
+    font-size: var(--subtitle-font-size);
+}
+
+small {
+    font-size: var(--subtitle-font-size);
+}
+
+.home-icon {
+    float: right;
+    font-size: 22px;
+    content: '&#127968';
 }
 
 .post-body {
@@ -193,12 +245,11 @@ a:visited {
     margin-top: auto;
     bottom: 5%;
     padding-top: 20px;
-    padding-bottom: 20px;
     font-size: 14px;
 }
 
 hr {
-    color: var(--base-color);
+    color: var(--heading-color);
     overflow: visible;
     text-align: center;
     background: none;
