@@ -16,4 +16,5 @@ typedef struct Post
 	char   id[ 32 ];   // essentially the date, i.e., 2000-00-00
 	char   title[ 64 ];// optional field
 	char  *body;       // bulk html body of the post
+	bool   isHidden;   // if false, appears in menu
 } Post;

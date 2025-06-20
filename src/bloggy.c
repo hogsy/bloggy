@@ -161,12 +161,12 @@ static void index_post( const char *path, void *user )
 	PL_DELETE( buf );
 }
 
-static void index_page( const char *path, void *user )
+static Post *index_page( const char *path, void *user )
 {
 	char *buf = load_to_buf( path );
 	if ( buf == NULL )
 	{
-		return;
+		return NULL;
 	}
 
 	Post *in = parse_post_buf( buf );
@@ -180,12 +180,14 @@ static void index_page( const char *path, void *user )
 			printf( "No title specified for page (%s)!\n", filename );
 		}
 
-		PlPushBackVectorArrayElement( ( PLVectorArray * ) user, in );
+		PlPushBackVectorArrayElement( user, in );
 
 		printf( "Indexed page, %s (%s)\n", in->id, *in->title != '\0' ? in->title : "n/a" );
 	}
 
 	PL_DELETE( buf );
+
+	return in;
 }
 
 static int compare_timestamps( const void *p1, const void *p2 )
@@ -196,14 +198,12 @@ static int compare_timestamps( const void *p1, const void *p2 )
 	{
 		return -1;
 	}
-	else if ( a->timestamp < b->timestamp )
+	if ( a->timestamp < b->timestamp )
 	{
 		return 1;
 	}
-	else
-	{
-		return 0;
-	}
+
+	return 0;
 }
 
 static void print_html_header( FILE *file, const char *title, const char *url )
@@ -310,8 +310,13 @@ static void write_html_homepage( void )
 	Post       **pages = ( Post ** ) PlGetVectorArrayDataEx( blogPages, &numPages );
 	for ( unsigned int i = 0; i < numPages; ++i )
 	{
+		if ( pages[ i ]->isHidden )
+		{
+			continue;
+		}
+
 		fprintf( file, "<a href=\"%s.htm\">%s</a>", pages[ i ]->id, pages[ i ]->title );
-		fprintf( file, i < ( numPages - 1 ) ? " &#8285; " : "<br>" );
+		fprintf( file, i + 1 < ( numPages - 1 ) ? " &#8285; " : "<br>" );
 	}
 	fprintf( file, "</div>" );//menu
 
@@ -484,7 +489,18 @@ static bool load_config( void )
 		{
 			PLPath path;
 			PlParseEnclosedString( &p, path, sizeof( path ) );
-			index_page( path, blogPages );
+
+			Post *post = index_page( path, blogPages );
+			if ( post == NULL )
+			{
+				PlSkipLine( &p );
+				continue;
+			}
+
+			if ( !PlIsEndOfLine( p ) && PlParseEnclosedString( &p, path, sizeof( path ) ) != NULL )
+			{
+				post->isHidden = strcmp( path, "hidden" ) == 0;
+			}
 		}
 		else
 		{

@@ -1,0 +1,6 @@
+title "Hidden page"
+----
+
+<p>
+    This page should be indexed, but not shown in the menu!
+</p>
